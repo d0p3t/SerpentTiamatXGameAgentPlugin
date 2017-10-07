@@ -4,7 +4,7 @@
 
 For use with SerpentTiamatXGamePlugin available [here](https://github.com/d0p3t/SerpentTiamatXGameAgentPlugin)
 
-[<img src="http://cdn.edgecast.steamstatic.com/steam/apps/400030/header.jpg" width="173" height="75" />](http://store.steampowered.com/app/400030/Cloney/)
+[<img src="http://cdn.edgecast.steamstatic.com/steam/apps/343340/header.jpg" />](http://store.steampowered.com/app/400030/Cloney/)
 
 ## About TiamatX
 
