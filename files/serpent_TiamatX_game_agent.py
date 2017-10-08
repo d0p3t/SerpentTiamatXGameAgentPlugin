@@ -182,6 +182,7 @@ class SerpentTiamatXGameAgent(GameAgent):
             serpent.utilities.clear_terminal()
 
             print(f"SESSION RUN TIME: {run_time.days} days, {run_time.seconds // 3600} hours, {(run_time.seconds // 60) % 60} minutes, {run_time.seconds % 60} seconds")
+            print("GAME: TiamatX                PLATFORM: Steam                AGENT: DDQN + Prioritized Experience Replay")
             print("")
 
             print("DIRECTION NEURAL NETWORK:\n")
@@ -279,6 +280,7 @@ class SerpentTiamatXGameAgent(GameAgent):
         keys = self.dqn_direction.get_input_values() + self.dqn_action.get_input_values()
         print("")
 
+        print("PRESSING: ", end='')
         print(" + ".join(list(map(lambda k: self.key_mapping.get(k.name), keys))))
 
         self.input_controller.handle_keys(keys)
@@ -318,8 +320,6 @@ class SerpentTiamatXGameAgent(GameAgent):
         vessel_hp = 0
         max_ssim = 0
 
-        print(f"VESSEL_HP BEFORE: {vessel_hp}")
-
         for name, sprite in self.game.sprites.items():
             for i in range(sprite.image_data.shape[3]):
                 ssim = skimage.measure.compare_ssim(hp_area_frame, np.squeeze(sprite.image_data[..., :3, i]), multichannel=True)
@@ -328,7 +328,6 @@ class SerpentTiamatXGameAgent(GameAgent):
                     max_ssim = ssim
                     vessel_hp = int(name[-1])
 
-        print(f"VESSEL_HP AFTER: {vessel_hp}")
         return vessel_hp
 
     def _measure_vessel_score(self, game_frame):
@@ -340,13 +339,30 @@ class SerpentTiamatXGameAgent(GameAgent):
 
         count = 0
 
-        for char in score:
-            if char == '0':
-                count = count + 1
-            else:
-                break
+        if len(score) == 7 and score.isdigit() and score != '0000000':
+            for char in score:
+                if char == '0':
+                    count = count + 1
+                else:
+                    break
+            score = score[count:]
+        else:
+            score = '1'
 
-        score = score[count:]
+        # if score == '' or score == ' ' or score == '0000000':
+        #     score = '1'
+        # else:
+        #     for char in score:
+        #         if char in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
+        #             if char == '0':
+        #                 count = count + 1
+        #             else:
+        #                 break
+        #         else:
+        #             score = '1'
+        #             break
+        #
+        #     score = score[count:]
 
         self.game_state["current_run_score"] = score
 
@@ -356,6 +372,6 @@ class SerpentTiamatXGameAgent(GameAgent):
         reward = 0
 
         reward += (-0.5 if self.game_state["health"][0] < self.game_state["health"][1] else 0.05)
-        reward += (0.5 if (self.game_state["score"][0] - self.game_state["score"][1]) >= 100 else -0.05)
+        reward += (0.5 if (int(self.game_state["score"][0]) - int(self.game_state["score"][1])) >= 50 else -0.05)
 
         return reward, reward
